@@ -11,15 +11,6 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_APP_ID,
   measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
-// const firebaseConfig = {
-//   apiKey: "AIzaSyCK_uL0lSLYXGBwAGHd3T8AhrQZgVY8ZVs",
-//   authDomain: "pokedol.firebaseapp.com",
-//   projectId: "pokedol",
-//   storageBucket: "pokedol.appspot.com",
-//   messagingSenderId: "9995462308",
-//   appId: "1:9995462308:web:3da6309069e23da1bbe831",
-//   measurementId: "G-YZPVFMCYDW",
-// };
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);

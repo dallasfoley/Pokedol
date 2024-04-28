@@ -8,7 +8,10 @@ const Settings = () => {
 
   return (
     <div className={`min-h-screen p-5`}>
-      <h1 className="text-4xl md:text-6xl text-center my-5 md:my-10">
+      <h1
+        className={`text-4xl md:text-6xl text-center my-5 md:my-10
+      `}
+      >
         Settings
       </h1>
       <div
@@ -20,21 +23,25 @@ const Settings = () => {
        } `}
       >
         <div className="flex w-full md:w-3/4 lg:w-1/2 justify-between items-center p-3">
-          <h1 className="text-xl md:text-3xl">Toggle Dark/Light Theme</h1>
+          <h1 className="text-md md:text-2xl">Toggle Dark/Light Theme</h1>
           <button
             onClick={() => setDarkTheme(!darkTheme)}
             className={`w-14 h-14 rounded-2xl ${
               darkTheme
-                ? "bg-slate-900 text-slate-200 hover:bg-slate-950"
+                ? "bg-slate-900 text-slate-200 hover:bg-slate-700"
                 : "bg-slate-200 text-slate-900 hover:bg-slate-400"
             } text-white font-bold 
           transition duration-500 ease-in-out hover:scale-110`}
           >
-            {darkTheme ? <DarkModeIcon /> : <LightModeIcon />}
+            {darkTheme ? (
+              <DarkModeIcon />
+            ) : (
+              <LightModeIcon className="text-slate-900" />
+            )}
           </button>
         </div>
         <div className="flex w-full md:w-3/4 lg:w-1/2 justify-between items-center p-3">
-          <h1 className="text-xl md:text-3xl">Delete Account</h1>
+          <h1 className="text-md md:text-2xl">Delete Account</h1>
           <button className="px-5 py-2 rounded-md bg-red-500 text-white font-bold transition duration-300 ease-in-out hover:bg-red-600">
             Delete
           </button>

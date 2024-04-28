@@ -31,7 +31,7 @@ function App() {
           darkTheme
             ? "bg-slate-900 text-slate-200"
             : "bg-slate-200 text-slate-900"
-        } w-full min-h-screen text-white`}
+        } w-full min-h-screen`}
       >
         <Router>
           {user && <NavBar />}
