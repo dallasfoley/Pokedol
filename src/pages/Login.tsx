@@ -11,7 +11,10 @@ const Login = () => {
   const [passwordInput, setPasswordInput] = useState("");
   const navigate = useNavigate();
 
-  const handleSignInWithEmailPassword = async () => {
+  const handleSignInWithEmailPassword = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
     signInWithEmailPassword(emailInput, passwordInput);
     auth.onAuthStateChanged(function (user) {
       if (user) {
@@ -23,7 +26,10 @@ const Login = () => {
     });
   };
 
-  const handleSignInWithGoogle = async () => {
+  const handleSignInWithGoogle = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
     signInWithGoogle();
     auth.onAuthStateChanged(function (user) {
       if (user) {
@@ -59,7 +65,7 @@ const Login = () => {
         />
 
         <button
-          onClick={handleSignInWithEmailPassword}
+          onClick={(e) => handleSignInWithEmailPassword(e)}
           className="h-14 w-14 bg-slate-500 rounded-2xl hover:bg-slate-200
         transition duration-300 hover:scale-110 hover:text-black"
         >
