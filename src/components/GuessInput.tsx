@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { names } from "../lib/constants";
 
-const InputGuess = ({
+const GuessInput = ({
   input,
   setInput,
   handleGuess,
@@ -80,4 +80,4 @@ const InputGuess = ({
   );
 };
 
-export default InputGuess;
+export default GuessInput;

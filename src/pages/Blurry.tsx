@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useContext } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
 import GuessInput from "../components/GuessInput";
+import WinMsg from "../components/WinMsg";
 
 const id = Math.floor(Math.random() * 151);
 
@@ -51,12 +52,20 @@ const Blurry = () => {
   return (
     <>
       <div className="flex flex-col items-center justify-around">
-        <GuessInput
-          input={input}
-          setInput={setInput}
-          handleGuess={() => handleGuess()}
-          handleGuess2={(name) => handleGuess2(name)}
-        />
+        {guesses.length === 0 && (
+          <p className="text-lg md-text-3xl mt-4">
+            Guess a Pokemon to begin! The image will become slightly less blurry
+            following each incorrect guess.
+          </p>
+        )}
+        {!hasWon && (
+          <GuessInput
+            input={input}
+            setInput={setInput}
+            handleGuess={handleGuess}
+            handleGuess2={(name) => handleGuess2(name)}
+          />
+        )}
 
         <img
           src={answer[1]}
@@ -69,13 +78,7 @@ const Blurry = () => {
             transition: "transform 0.3s ease",
           }}
         />
-        {hasWon && (
-          <div className="text-2xl md:text-3xl">
-            Congratulations! It took you {guesses.length}{" "}
-            {guesses.length === 1 ? "guess" : "guesses"} to correctly guess the
-            Pokemon!
-          </div>
-        )}
+        {hasWon && <WinMsg guesses={guesses.length} />}
         {guesses.map((guess, index) => (
           <div
             key={index}

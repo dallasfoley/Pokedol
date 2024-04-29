@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
 import InputGuess from "../components/GuessInput";
+import WinMsg from "../components/WinMsg";
 
 const id = Math.floor(Math.random() * 151);
 
@@ -55,43 +56,43 @@ const Zoom = () => {
   return (
     <>
       <div className="flex flex-col justify-around items-center">
-        <InputGuess
-          input={input}
-          setInput={setInput}
-          handleGuess={handleGuess}
-          handleGuess2={(name) => handleGuess2(name)}
-        />
-        {hasWon ? (
-          <img
-            src={answer[1]}
-            alt="Answer"
-            style={{ width: "500px", height: "500px", margin: "20px auto" }}
-          />
-        ) : (
-          <div
-            className="image-container"
-            style={{
-              backgroundImage: `url(${answer[1]})`,
-              backgroundSize: `${zoomPercent}%`,
-              backgroundPosition: "center",
-              width: "500px",
-              height: "500px",
-              margin: "20px auto",
-              border: "1px solid black",
-              backgroundRepeat: "no-repeat",
-            }}
-          ></div>
+        {guesses.length === 0 && (
+          <p className="text-lg md-text-3xl mt-4">
+            Guess a Pokemon to begin! The image will become slightly more
+            zoomed-out following each incorrect guess.
+          </p>
         )}
-
-        {hasWon && (
-          <div
-            className="text-2xl md:text-3xl"
-            style={{ color: darkTheme ? "#ebfffc" : "#2f3133" }}
-          >
-            Congratulations! It took you {guesses.length}{" "}
-            {guesses.length === 1 ? "guess" : "guesses"} to correctly guess the
-            Pokemon!
-          </div>
+        {!hasWon ? (
+          <>
+            <InputGuess
+              input={input}
+              setInput={setInput}
+              handleGuess={handleGuess}
+              handleGuess2={(name) => handleGuess2(name)}
+            />
+            <div
+              className=""
+              style={{
+                backgroundImage: `url(${answer[1]})`,
+                backgroundSize: `${zoomPercent}%`,
+                backgroundPosition: "center",
+                width: "500px",
+                height: "500px",
+                margin: "20px auto",
+                border: "1px solid black",
+                backgroundRepeat: "no-repeat",
+              }}
+            ></div>
+          </>
+        ) : (
+          <>
+            <img
+              src={answer[1]}
+              alt="Answer"
+              style={{ width: "500px", height: "500px", margin: "20px auto" }}
+            />
+            <WinMsg guesses={guesses.length} />
+          </>
         )}
         {guesses.map((guess, index) => (
           <div

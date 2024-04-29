@@ -2,10 +2,12 @@ import { useState, useContext } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { PokemonApi } from "../lib/types";
 import Row from "../components/Row";
-import InputGuess from "../components/GuessInput";
+import WinMsg from "../components/WinMsg";
+import GuessInput from "../components/GuessInput";
 
 const isDev = import.meta.env.MODE === "development";
 const API_BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
+const id = Math.floor(Math.random() * 151);
 
 const ColumnHead = {
   name: "Name",
@@ -71,7 +73,6 @@ const Classic = () => {
   const [guesses, setGuesses] = useState<PokemonApi[]>([]);
   const [answer, setAnswer] = useState<PokemonApi | null>(null);
   const darkTheme = useContext(ThemeContext).darkTheme;
-  const randomPokemonId = Math.floor(Math.random() * 151);
 
   const hasWon = guesses.length > 0 && guesses[0].name === answer?.name;
 
@@ -81,10 +82,7 @@ const Classic = () => {
     try {
       if (answer === null || hasWon) {
         setGuesses([]);
-        const data = await getPokemonData(
-          `${API_BASE_URL}${randomPokemonId}`,
-          answer
-        );
+        const data = await getPokemonData(`${API_BASE_URL}${id}`, answer);
         isDev && console.log("answer: ", data.name);
         setAnswer(data);
       }
@@ -108,10 +106,7 @@ const Classic = () => {
     try {
       if (answer === null || hasWon) {
         setGuesses([]);
-        const data = await getPokemonData(
-          `${API_BASE_URL}${randomPokemonId}`,
-          answer
-        );
+        const data = await getPokemonData(`${API_BASE_URL}${id}`, answer);
         isDev && console.log("answer: ", data.name);
         setAnswer(data);
       }
@@ -130,36 +125,34 @@ const Classic = () => {
   };
 
   return (
-    <div style={{ backgroundColor: darkTheme ? "#2f3133" : "#f0f0f0" }}>
-      <div className="wrapper">
-        <InputGuess
+    <div className="flex flex-col justify-around items-center">
+      {guesses.length === 0 && (
+        <p className="text-lg md-text-3xl mt-4">
+          Guess a Pokemon to begin! You will receive hints about the Pokémon's
+          attributes following each incorrect guess.
+        </p>
+      )}
+      {hasWon ? (
+        <>
+          <img className="classic-img" src={answer?.picUrl} />
+          <WinMsg guesses={guesses.length} />
+        </>
+      ) : (
+        <GuessInput
           input={input}
           setInput={setInput}
           handleGuess={handleGuess}
           handleGuess2={(name) => handleGuess2(name)}
         />
-        {hasWon && (
-          <div className="win">
-            Congratulations! It took you {guesses.length} guess
-            {guesses.length !== 1 && "es"} to correctly guess the Pokemon!
-            <img className="classic-img" src={answer?.picUrl} />
+      )}
+      <div className="grid grid-cols-8 gap-10">
+        {Object.entries(ColumnHead).map(([key, val]) => (
+          <div className="my-5 mx-1" key={key}>
+            {val}
           </div>
-        )}
-        <div className="attributes-header">
-          {Object.entries(ColumnHead).map(([key, val]) => (
-            <div key={key}>{val}</div>
-          ))}
-        </div>
-        {guesses.length === 0 && (
-          <p
-            style={{
-              fontSize: "20px",
-              color: darkTheme ? "#ffffff" : "#2f3133",
-            }}
-          >
-            Guess a Pokemon to begin
-          </p>
-        )}
+        ))}
+      </div>
+      <div className="flex flex-col justify-around">
         {guesses.map((guess, idx) => (
           <Row key={`${idx}-${guess.name}`} {...guess} />
         ))}
