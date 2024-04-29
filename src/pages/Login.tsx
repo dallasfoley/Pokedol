@@ -1,11 +1,7 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import GoogleIcon from "@mui/icons-material/Google";
 import MailIcon from "@mui/icons-material/Mail";
-import {
-  signUpWithEmailPassword,
-  signInWithEmailPassword,
-  signInWithGoogle,
-} from "../lib/constants";
+import { signInWithEmailPassword, signInWithGoogle } from "../lib/constants";
 import { useState } from "react";
 import { auth } from "../lib/firebase.config";
 import { useNavigate } from "react-router-dom";
@@ -39,6 +35,10 @@ const Login = () => {
     });
   };
 
+  const handleSignUpWithGoogle = async () => {
+    navigate("/signup");
+  };
+
   return (
     <div className="min-h-screen w-full bg-slate-950 m-0 flex flex-col justify-center items-center text-white p-0">
       <div className="h-96 w-64 md:h-96 md:w-72 rounded-2xl bg-slate-800 flex flex-col justify-around items-center p-0">
@@ -48,14 +48,14 @@ const Login = () => {
           placeholder="Email..."
           onChange={(e) => setEmailInput(e.target.value)}
           required
-          className="h-10 w-48 rounded-xl p-2"
+          className="h-10 w-48 rounded-xl p-2 text-slate-950"
         />
         <input
           type="password"
           placeholder="Password..."
           onChange={(e) => setPasswordInput(e.target.value)}
           required
-          className="h-10 w-48 rounded-xl p-2"
+          className="h-10 w-48 rounded-xl p-2 text-slate-950"
         />
 
         <button
@@ -82,7 +82,7 @@ const Login = () => {
       <h3 className="my-4">{`Don't have an account yet?`}</h3>
       <div className="flex flex-col justify-around items-center ">
         <button
-          onClick={() => signUpWithEmailPassword(emailInput, passwordInput)}
+          onClick={handleSignUpWithGoogle}
           className="h-14 w-56 bg-slate-500 rounded-2xl hover:bg-slate-200
         transition duration-300 hover:scale-110 hover:text-black text-lg"
         >

@@ -1,5 +1,4 @@
-import { useState, useContext } from "react";
-import { ThemeContext } from "../contexts/ThemeContext";
+import { useState } from "react";
 import { PokemonApi } from "../lib/types";
 import Row from "../components/Row";
 import WinMsg from "../components/WinMsg";
@@ -72,7 +71,6 @@ const Classic = () => {
   const [input, setInput] = useState("");
   const [guesses, setGuesses] = useState<PokemonApi[]>([]);
   const [answer, setAnswer] = useState<PokemonApi | null>(null);
-  const darkTheme = useContext(ThemeContext).darkTheme;
 
   const hasWon = guesses.length > 0 && guesses[0].name === answer?.name;
 
@@ -127,14 +125,17 @@ const Classic = () => {
   return (
     <div className="flex flex-col justify-around items-center">
       {guesses.length === 0 && (
-        <p className="text-lg md-text-3xl mt-4">
+        <p className="text-lg md-text-3xl mt-4 flex flex-wrap justify-center items-center">
           Guess a Pokemon to begin! You will receive hints about the Pokémon's
           attributes following each incorrect guess.
         </p>
       )}
       {hasWon ? (
         <>
-          <img className="classic-img" src={answer?.picUrl} />
+          <img
+            style={{ height: "500px", width: "500px" }}
+            src={answer?.picUrl}
+          />
           <WinMsg guesses={guesses.length} />
         </>
       ) : (

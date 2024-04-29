@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { names } from "../lib/constants";
+import SearchIcon from "@mui/icons-material/Search";
 
 const GuessInput = ({
   input,
@@ -46,21 +47,21 @@ const GuessInput = ({
           }}
         />
         <button
-          className={`rounded-2xl h-14 w-14 ml-3`}
+          className={`rounded-2xl h-14 w-14 ml-3 transition duration-300 hover:scale-110`}
           onClick={() => handleGuess()}
           style={{
             color: darkTheme ? "#2f3133" : "#ebfffc",
             background: darkTheme ? "#ebfffc" : "#2f3133",
           }}
         >
-          Guess
+          <SearchIcon />
         </button>
       </div>
       {filteredData.length > 0 && (
         <div className="dataResult">
           {filteredData.slice(0, 15).map((name, key) => (
             <button
-              className="m-0 h-10 w-full p-3 flex items-center border-2"
+              className="dataItem"
               onClick={() => {
                 setInput(name);
                 handleGuess2(name);

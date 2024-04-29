@@ -42,7 +42,7 @@ const Settings = () => {
         </div>
         <div className="flex w-full justify-between items-center p-3">
           <h1 className="text-md md:text-2xl">Delete Account</h1>
-          <button className="px-5 py-2 rounded-md bg-red-500 text-white font-bold transition duration-300 ease-in-out hover:bg-red-600">
+          <button className="px-5 py-2 rounded-md bg-red-500 text-white font-bold transition duration-300 ease-in-out hover:scale-110 hover:bg-red-600">
             Delete
           </button>
         </div>

@@ -10,10 +10,14 @@ import { ThemeContext } from "./contexts/ThemeContext";
 import Classic from "./pages/Classic";
 import Blurry from "./pages/Blurry";
 import Zoomed from "./pages/Zoomed";
+import SignUp from "./pages/SignUp";
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
-  const [darkTheme, setDarkTheme] = useState(true);
+  const [darkTheme, setDarkTheme] = useState(() => {
+    const savedTheme = localStorage.getItem("darkTheme");
+    return savedTheme === "true" ? true : false;
+  });
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
@@ -21,6 +25,10 @@ function App() {
     });
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("darkTheme", darkTheme.toString());
+  }, [darkTheme]);
 
   console.log(user);
 
@@ -42,6 +50,7 @@ function App() {
             <Route path="/blurry" element={<Blurry />} />
             <Route path="/zoomed" element={<Zoomed />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/signup" element={<SignUp />} />
           </Routes>
         </Router>
       </div>
