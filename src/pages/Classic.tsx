@@ -38,7 +38,8 @@ const getPokemonData = async (
   const newEvoState = (
     (species.evolves_from_species ? 1 : 0) +
     (evolutionChain.chain.evolves_to.length > 0 ? 1 : 0) +
-    (evolutionChain.chain.evolves_to[0].evolves_to.length > 0 ? 1 : 0)
+    (evolutionChain.chain.evolves_to[0].evolves_to.length > 0 ? 1 : 0) -
+    1
   ).toString();
 
   return {
