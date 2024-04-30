@@ -1,15 +1,19 @@
 {
   "routes": [
     {
-      "src": "^/static/(.*)",
-      "dest": "/static/$1"
+      "src": "^/app/(.*)",
+      "dest": "/app/$1"
+    },
+    {
+      "src": "^/src/(.*)",
+      "dest": "/src/$1"
     },
     {
       "src": "/(.*)",
       "headers": {
         "cache-control": "s-maxage=0"
       },
-      "dest": "/index.html",
+      "dest": "/app/index.html",
       "continue": true
     }
   ]
