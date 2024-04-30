@@ -35,13 +35,11 @@ const getPokemonData = async (
   const { name, type1, type2, habitat, color, evolutionStage, height, weight } =
     answer || {};
 
-  const newEvoState =
+  const newEvoState = (
     (species.evolves_from_species ? 1 : 0) +
     (evolutionChain.chain.evolves_to.length > 0 ? 1 : 0) +
-    (evolutionChain.chain.evolves_to[0].evolves_to.length > 0
-      ? 1
-      : 0
-    ).toString();
+    (evolutionChain.chain.evolves_to[0].evolves_to.length > 0 ? 1 : 0)
+  ).toString();
 
   return {
     name: pokemon.name,
