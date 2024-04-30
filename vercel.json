@@ -1,8 +1,16 @@
 {
   "routes": [
     {
+      "src": "^/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "headers": {
+        "cache-control": "s-maxage=0"
+      },
+      "dest": "/index.html",
+      "continue": true
     }
   ]
 }
