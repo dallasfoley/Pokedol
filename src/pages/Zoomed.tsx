@@ -89,7 +89,8 @@ const Zoom = () => {
             <img
               src={answer[1]}
               alt="Answer"
-              style={{ width: "500px", height: "500px", margin: "20px auto" }}
+              style={{ margin: "20px auto" }}
+              className="h-[200px] w-[200px] md:h-[350px] md:w-[350px] lg:h-[500px] lg:w-[500px]"
             />
             <WinMsg guesses={guesses.length} />
           </>

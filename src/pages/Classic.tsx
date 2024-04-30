@@ -37,9 +37,8 @@ const getPokemonData = async (
 
   const newEvoState = (
     (species.evolves_from_species ? 1 : 0) +
-    (evolutionChain.chain.evolves_to.length > 0 ? 1 : 0) +
-    (evolutionChain.chain.evolves_to[0].evolves_to.length > 0 ? 1 : 0) -
-    1
+    (evolutionChain.chain.evolves_to ? 1 : 0) +
+    (evolutionChain.chain.evolves_to[0].evolves_to.length > 1 ? 1 : 0)
   ).toString();
 
   return {
@@ -132,7 +131,7 @@ const Classic = () => {
       {hasWon ? (
         <>
           <img
-            style={{ height: "500px", width: "500px" }}
+            className="h-[200px] w-[200px] md:h-[350px] md:w-[350px] lg:h-[500px] lg:w-[500px]"
             src={answer?.picUrl}
           />
           <WinMsg guesses={guesses.length} />

@@ -69,11 +69,9 @@ const Blurry = () => {
 
         <img
           src={answer[1]}
-          className=""
+          className="h-[200px] w-[200px] md:h-[350px] md:w-[350px] lg:h-[500px] lg:w-[500px]"
           style={{
             filter: !hasWon ? `blur(${64 - guesses.length * 8}px)` : "none",
-            width: "500px",
-            height: "500px",
             objectFit: "contain",
             transition: "transform 0.3s ease",
           }}
