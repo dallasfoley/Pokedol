@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
 import InputGuess from "../components/GuessInput";
 import WinMsg from "../components/WinMsg";
+import { names } from "../lib/constants";
 
 const id = Math.floor(Math.random() * 151);
 
@@ -27,7 +28,7 @@ const Zoom = () => {
   const hasWon = guesses.length > 0 && guesses[0] === answer[0];
 
   const handleGuess = async () => {
-    if (!hasWon) {
+    if (!hasWon && names.includes(input.toLowerCase())) {
       setGuesses([input.toLowerCase(), ...guesses]);
       setZoomPercent(zoomPercent - 50);
     }

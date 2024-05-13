@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
 import GuessInput from "../components/GuessInput";
 import WinMsg from "../components/WinMsg";
+import { names } from "../lib/constants";
 
 const id = Math.floor(Math.random() * 151);
 
@@ -27,7 +28,9 @@ const Blurry = () => {
   const hasWon = guesses.length > 0 && guesses[0] === answer[0];
 
   const handleGuess = () => {
-    !hasWon && setGuesses([input.toLowerCase(), ...guesses]);
+    if (names.includes(input.toLowerCase())) {
+      !hasWon && setGuesses([input.toLowerCase(), ...guesses]);
+    }
   };
 
   const handleGuess2 = (name: string) => {
