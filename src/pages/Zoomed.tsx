@@ -3,6 +3,8 @@ import { ThemeContext } from "../contexts/ThemeContext";
 import InputGuess from "../components/GuessInput";
 import WinMsg from "../components/WinMsg";
 import { names } from "../lib/constants";
+import updateStreak from "../functions/updateStreak";
+import AnalyticsBar from "../components/AnalyticsBar";
 
 const id = Math.floor(Math.random() * 151);
 
@@ -24,8 +26,9 @@ const Zoom = () => {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [zoomPercent, setZoomPercent] = useState(750);
   const darkTheme = useContext(ThemeContext).darkTheme;
+  const [hasWon, setHasWon] = useState(false);
 
-  const hasWon = guesses.length > 0 && guesses[0] === answer[0];
+  setHasWon(guesses.length > 0 && guesses[0] === answer[0]);
 
   const handleGuess = async () => {
     if (!hasWon && names.includes(input.toLowerCase())) {
@@ -54,9 +57,16 @@ const Zoom = () => {
     fetchAnswer().catch(console.error);
   }, []);
 
+  useEffect(() => {
+    if (hasWon) {
+      updateStreak("zoomed", guesses.length);
+    }
+  }, [hasWon, guesses]);
+
   return (
     <>
       <div className="flex flex-col justify-around items-center">
+        <AnalyticsBar game="zoomed" fetchTrigger={hasWon} />
         {guesses.length === 0 && (
           <p className="text-lg md-text-3xl mt-4">
             Guess a Pokemon to begin! The image will become slightly more

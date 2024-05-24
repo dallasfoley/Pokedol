@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PokemonApi } from "../lib/types";
 import Row from "../components/Row";
 import WinMsg from "../components/WinMsg";
 import GuessInput from "../components/GuessInput";
+import updateStreak from "../functions/updateStreak";
+import AnalyticsBar from "../components/AnalyticsBar";
 
 const isDev = import.meta.env.MODE === "development";
 const API_BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
@@ -35,10 +37,15 @@ const getPokemonData = async (
   const { name, type1, type2, habitat, color, evolutionStage, height, weight } =
     answer || {};
 
+  const evolvesFromSpecies = species.evolves_from_species ? 1 : 0;
+  const evolvesTo = evolutionChain.chain.evolves_to.length > 0 ? 1 : 0;
+  const evolvesToFurther =
+    evolutionChain.chain.evolves_to[0]?.evolves_to.length > 0 ? 1 : 0;
+
   const newEvoState = (
-    (species.evolves_from_species ? 1 : 0) +
-    (evolutionChain.chain.evolves_to ? 1 : 0) +
-    (evolutionChain.chain.evolves_to[0].evolves_to.length > 1 ? 1 : 0)
+    evolvesFromSpecies +
+    evolvesTo +
+    evolvesToFurther
   ).toString();
 
   return {
@@ -69,6 +76,7 @@ const Classic = () => {
   const [input, setInput] = useState("");
   const [guesses, setGuesses] = useState<PokemonApi[]>([]);
   const [answer, setAnswer] = useState<PokemonApi | null>(null);
+  const [fetchTrigger, setFetchTrigger] = useState(false);
 
   const hasWon = guesses.length > 0 && guesses[0].name === answer?.name;
 
@@ -113,15 +121,24 @@ const Classic = () => {
         );
         setGuesses([data, ...guesses]);
       }
-    } catch (error) {
+    } catch (e) {
       alert("Failed to fetch Pokémon");
+      console.error(e);
     } finally {
       setInput("");
     }
   };
 
+  useEffect(() => {
+    if (hasWon) {
+      updateStreak("classic", guesses.length);
+      setFetchTrigger(!fetchTrigger);
+    }
+  }, [hasWon]);
+
   return (
     <div className="flex flex-col justify-around items-center">
+      <AnalyticsBar game="classic" fetchTrigger={fetchTrigger} />
       {guesses.length === 0 && (
         <p className="text-lg md-text-3xl mt-4 flex flex-wrap justify-center items-center">
           Guess a Pokemon to begin! You will receive hints about the Pokémon's

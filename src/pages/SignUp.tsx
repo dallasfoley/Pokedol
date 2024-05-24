@@ -1,8 +1,9 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { signUpWithEmailPassword } from "../lib/constants";
 import { useState } from "react";
-import { auth } from "../lib/firebase.config";
+import { auth, db } from "../config/firebase.config";
 import { useNavigate } from "react-router-dom";
+import { getDoc, setDoc, doc } from "firebase/firestore";
 
 const SignUp = () => {
   const [emailInput, setEmailInput] = useState("");
@@ -10,15 +11,40 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   const handleSignUpWithEmailPassword = async () => {
-    signUpWithEmailPassword(emailInput, passwordInput);
-    auth.onAuthStateChanged(function (user) {
-      if (user) {
-        console.log("This is the user: ", user);
-        navigate("/home");
-      } else {
-        console.log("There is no logged in user");
-      }
-    });
+    try {
+      await signUpWithEmailPassword(emailInput, passwordInput);
+      auth.onAuthStateChanged(async function (user) {
+        if (user) {
+          const docRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+
+          !docSnap.exists() &&
+            (await setDoc(docRef, {
+              blurryStreak: 0,
+              classicStreak: 0,
+              zoomedStreak: 0,
+              blurryMax: 0,
+              classicMax: 0,
+              zoomedMax: 0,
+              blurryDate: "null",
+              classicDate: "null",
+              zoomedDate: "null",
+              userID: user.uid,
+              classicTotalGuesses: 0,
+              classicTotalWins: 0,
+              blurryTotalGuesses: 0,
+              blurryTotalWins: 0,
+              zoomedTotalGuesses: 0,
+              zoomedTotalWins: 0,
+            }));
+          navigate("/home");
+        } else {
+          console.log("There is no logged in user");
+        }
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -43,7 +69,7 @@ const SignUp = () => {
         <button
           onClick={handleSignUpWithEmailPassword}
           className="h-14 w-14 bg-slate-500 rounded-2xl hover:bg-slate-200
-        transition duration-300 hover:scale-110 hover:text-black"
+        transition duration-300 hover:scale-105 hover:text-black"
         >
           <ArrowForwardIcon fontSize="large" />
         </button>
