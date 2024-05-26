@@ -3,8 +3,9 @@ import GoogleIcon from "@mui/icons-material/Google";
 import MailIcon from "@mui/icons-material/Mail";
 import { signInWithEmailPassword, signInWithGoogle } from "../lib/constants";
 import { useState } from "react";
-import { auth } from "../lib/firebase.config";
+import { auth, db } from "../config/firebase.config";
 import { useNavigate } from "react-router-dom";
+import { getDoc, setDoc, doc } from "firebase/firestore";
 
 const Login = () => {
   const [emailInput, setEmailInput] = useState("");
@@ -18,7 +19,6 @@ const Login = () => {
     signInWithEmailPassword(emailInput, passwordInput);
     auth.onAuthStateChanged(function (user) {
       if (user) {
-        console.log("This is the user: ", user);
         navigate("/home");
       } else {
         console.log("There is no logged in user");
@@ -31,9 +31,30 @@ const Login = () => {
   ) => {
     e.preventDefault();
     signInWithGoogle();
-    auth.onAuthStateChanged(function (user) {
+    auth.onAuthStateChanged(async function (user) {
       if (user) {
-        console.log("This is the user: ", user);
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        !docSnap.exists() &&
+          (await setDoc(docRef, {
+            blurryStreak: 0,
+            classicStreak: 0,
+            zoomedStreak: 0,
+            blurryMax: 0,
+            classicMax: 0,
+            zoomedMax: 0,
+            blurryDate: "null",
+            classicDate: "null",
+            zoomedDate: "null",
+            userID: user.uid,
+            classicTotalGuesses: 0,
+            classicTotalWins: 0,
+            blurryTotalGuesses: 0,
+            blurryTotalWins: 0,
+            zoomedTotalGuesses: 0,
+            zoomedTotalWins: 0,
+          }));
         navigate("/home");
       } else {
         console.log("There is no logged in user");
@@ -41,9 +62,12 @@ const Login = () => {
     });
   };
 
-  const handleSignUpWithGoogle = async () => {
+  const handleSignUpWithEmail = async () => {
     navigate("/signup");
   };
+
+  console.log("API Key:", import.meta.env.VITE_API_KEY);
+  console.log("Auth Domain:", import.meta.env.VITE_AUTH_DOMAIN);
 
   return (
     <div className="min-h-screen w-full bg-slate-950 m-0 flex flex-col justify-center items-center text-white p-0">
@@ -67,7 +91,7 @@ const Login = () => {
         <button
           onClick={(e) => handleSignInWithEmailPassword(e)}
           className="h-14 w-14 bg-slate-500 rounded-2xl hover:bg-slate-200
-        transition duration-300 hover:scale-110 hover:text-black"
+        transition duration-300 hover:scale-105 hover:text-black"
         >
           <ArrowForwardIcon fontSize="large" />
         </button>
@@ -77,7 +101,7 @@ const Login = () => {
         <button
           onClick={handleSignInWithGoogle}
           className="h-14 w-56 bg-slate-500 rounded-2xl hover:bg-slate-200
-        transition duration-300 hover:scale-110 hover:text-black text-lg"
+        transition duration-300 hover:scale-105 hover:text-black text-lg"
         >
           <div className="flex justify-center items-center">
             <h3 className="font-bold mr-1">Sign-In with Google</h3>
@@ -88,9 +112,9 @@ const Login = () => {
       <h3 className="my-4">{`Don't have an account yet?`}</h3>
       <div className="flex flex-col justify-around items-center ">
         <button
-          onClick={handleSignUpWithGoogle}
+          onClick={handleSignUpWithEmail}
           className="h-14 w-56 bg-slate-500 rounded-2xl hover:bg-slate-200
-        transition duration-300 hover:scale-110 hover:text-black text-lg"
+        transition duration-300 hover:scale-105 hover:text-black text-lg"
         >
           <div className="flex justify-center items-center">
             <h3 className="font-bold mr-1">Sign-Up with Email</h3>
@@ -103,7 +127,7 @@ const Login = () => {
         <button
           onClick={handleSignInWithGoogle}
           className="h-14 w-56 bg-slate-500 rounded-2xl hover:bg-slate-200
-        transition duration-300 hover:scale-110 hover:text-black text-lg"
+        transition duration-300 hover:scale-105 hover:text-black text-lg"
         >
           <div className="flex justify-center items-center">
             <h3 className="font-bold mr-1">Sign-Up with Google</h3>

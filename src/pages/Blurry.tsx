@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useContext } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
+import updateStreak from "../functions/updateStreak";
 import GuessInput from "../components/GuessInput";
 import WinMsg from "../components/WinMsg";
 import { names } from "../lib/constants";
+import AnalyticsBar from "../components/AnalyticsBar";
 
 const id = Math.floor(Math.random() * 151);
 
@@ -24,6 +26,7 @@ const Blurry = () => {
   const [input, setInput] = useState("");
   const [guesses, setGuesses] = useState<string[]>([]);
   const darkTheme = useContext(ThemeContext).darkTheme;
+  const [fetchTrigger, setFetchTrigger] = useState(false);
 
   const hasWon = guesses.length > 0 && guesses[0] === answer[0];
 
@@ -52,9 +55,21 @@ const Blurry = () => {
     fetchAnswer().catch(console.error);
   }, []);
 
+  useEffect(() => {
+    if (hasWon) {
+      updateStreak("blurry", guesses.length);
+      setFetchTrigger((prev) => !prev);
+    }
+  }, [hasWon]);
+
   return (
     <>
       <div className="flex flex-col items-center justify-around">
+        <AnalyticsBar
+          game="blurry"
+          fetchTrigger={fetchTrigger}
+          guesses={guesses.length}
+        />
         {guesses.length === 0 && (
           <p className="text-lg md-text-3xl mt-4">
             Guess a Pokemon to begin! The image will become slightly less blurry

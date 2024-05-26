@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
-import { auth } from "./lib/firebase.config";
+import { auth } from "./config/firebase.config";
 import NavBar from "./components/NavBar";
 import { useState, useEffect } from "react";
 import { User } from "firebase/auth";
@@ -29,8 +29,6 @@ function App() {
   useEffect(() => {
     localStorage.setItem("darkTheme", darkTheme.toString());
   }, [darkTheme]);
-
-  console.log(user);
 
   return (
     <ThemeContext.Provider value={{ darkTheme, setDarkTheme }}>
