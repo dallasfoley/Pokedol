@@ -21,57 +21,6 @@ const ColumnHead = {
   weight: "Weight",
 };
 
-const getPokemonData = async (
-  url: string,
-  answer: PokemonApi | null = null
-) => {
-  const pokemonResponse = await fetch(url);
-  const pokemon = await pokemonResponse.json();
-
-  const speciesResponse = await fetch(pokemon.species.url);
-  const species = await speciesResponse.json();
-
-  const evolutionChainResponse = await fetch(species.evolution_chain.url);
-  const evolutionChain = await evolutionChainResponse.json();
-
-  const { name, type1, type2, habitat, color, evolutionStage, height, weight } =
-    answer || {};
-
-  const evolvesFromSpecies = species.evolves_from_species ? 1 : 0;
-  const evolvesTo = evolutionChain.chain.evolves_to.length > 0 ? 1 : 0;
-  const evolvesToFurther =
-    evolutionChain.chain.evolves_to[0]?.evolves_to.length > 0 ? 1 : 0;
-
-  const newEvoState = (
-    evolvesFromSpecies +
-    evolvesTo +
-    evolvesToFurther
-  ).toString();
-
-  return {
-    name: pokemon.name,
-    type1: pokemon.types[0].type.name,
-    type2: pokemon.types[1]?.type.name || "None",
-    habitat: species.habitat?.name || "Unknown",
-    color: species.color?.name || "Unknown",
-    evolutionStage: newEvoState,
-    height: `${pokemon.height * 10} cm`,
-    weight: `${pokemon.weight / 10} kg`,
-    picUrl: pokemon.sprites.front_default,
-    isCorrect: [
-      pokemon.name === name,
-      pokemon.types[0].type.name === type1,
-      (pokemon.types[1]?.type.name === type2 || type2 === "None") &&
-        species.habitat?.name === habitat,
-      species.habitat?.name === habitat,
-      species.color?.name === color,
-      newEvoState === evolutionStage,
-      `${pokemon.height * 10} cm` === height,
-      `${pokemon.weight / 10} kg` === weight,
-    ],
-  } as PokemonApi;
-};
-
 const Classic = () => {
   const [input, setInput] = useState("");
   const [guesses, setGuesses] = useState<PokemonApi[]>([]);
@@ -79,6 +28,61 @@ const Classic = () => {
   const [fetchTrigger, setFetchTrigger] = useState(false);
 
   const hasWon = guesses.length > 0 && guesses[0].name === answer?.name;
+
+  const getPokemonData = async (
+    url: string,
+    answer: PokemonApi | null = null
+  ) => {
+    const pokemonResponse = await fetch(url);
+    const pokemon = await pokemonResponse.json();
+
+    const speciesResponse = await fetch(pokemon.species.url);
+    const species = await speciesResponse.json();
+
+    let stage = 1;
+
+    if (species.evolves_from_species) {
+      const prevEvoResponse = await fetch(species.evolves_from_species.url);
+      const prevEvo = await prevEvoResponse.json();
+      console.log(prevEvo);
+      stage++;
+      prevEvo.evolves_from_species && stage++;
+    }
+
+    const {
+      name,
+      type1,
+      type2,
+      habitat,
+      color,
+      evolutionStage,
+      height,
+      weight,
+    } = answer || {};
+
+    return {
+      name: pokemon.name,
+      type1: pokemon.types[0].type.name,
+      type2: pokemon.types[1]?.type.name || "None",
+      habitat: species.habitat?.name || "Unknown",
+      color: species.color?.name || "Unknown",
+      evolutionStage: stage.toString(),
+      height: `${pokemon.height * 10} cm`,
+      weight: `${pokemon.weight / 10} kg`,
+      picUrl: pokemon.sprites.front_default,
+      isCorrect: [
+        pokemon.name === name,
+        pokemon.types[0].type.name === type1,
+        (pokemon.types[1]?.type.name === type2 || type2 === "None") &&
+          species.habitat?.name === habitat,
+        species.habitat?.name === habitat,
+        species.color?.name === color,
+        stage.toString() === evolutionStage,
+        `${pokemon.height * 10} cm` === height,
+        `${pokemon.weight / 10} kg` === weight,
+      ],
+    } as PokemonApi;
+  };
 
   const handleGuess = async () => {
     console.log("answer: ", answer);
@@ -110,9 +114,9 @@ const Classic = () => {
     try {
       if (answer === null || hasWon) {
         setGuesses([]);
-        const data = await getPokemonData(`${API_BASE_URL}${id}`, answer);
-        isDev && console.log("answer: ", data.name);
-        setAnswer(data);
+        //const data = await getPokemonData(`${API_BASE_URL}${id}`, answer);
+        //isDev && console.log("answer: ", data.name);
+        //setAnswer(data);
       }
       if (!hasWon) {
         const data = await getPokemonData(
@@ -135,6 +139,14 @@ const Classic = () => {
       setFetchTrigger(!fetchTrigger);
     }
   }, [hasWon]);
+
+  useEffect(() => {
+    const fetchAnswer = async () => {
+      const data = await getPokemonData(`${API_BASE_URL}${id}`);
+      setAnswer(data);
+    };
+    fetchAnswer();
+  }, []);
 
   return (
     <div className="flex flex-col justify-around items-center">

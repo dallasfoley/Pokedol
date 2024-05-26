@@ -18,7 +18,9 @@ const AnalyticsBar = ({
     const fetchUserData = async () => {
       const today = new Date();
       const todayString = today.toLocaleDateString();
-      const yesterdayString = (today.getDate() - 1).toLocaleString();
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      const yesterdayString = yesterday.toLocaleString();
       const data = await getUserData(game);
       data && setUser(data);
       if (
@@ -26,23 +28,35 @@ const AnalyticsBar = ({
         data?.classicDate !== todayString &&
         data?.classicDate !== yesterdayString &&
         data?.classicDate !== "null"
-      )
+      ) {
         resetStreak(game);
+        console.log(todayString);
+        console.log(yesterdayString);
+        console.log(data?.classicDate);
+      }
 
       if (
         game === "blurry" &&
         data?.blurryDate !== todayString &&
         data?.blurryDate !== yesterdayString &&
         data?.blurryDate !== "null"
-      )
+      ) {
         resetStreak(game);
+        console.log(todayString);
+        console.log(yesterdayString);
+        console.log(data?.blurryDate);
+      }
       if (
         game === "zoomed" &&
         data?.zoomedDate !== todayString &&
         data?.zoomedDate !== yesterdayString &&
         data?.zoomedDate !== "null"
-      )
+      ) {
         resetStreak(game);
+        console.log(todayString);
+        console.log(yesterdayString);
+        console.log(data?.zoomedDate);
+      }
     };
     fetchUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps

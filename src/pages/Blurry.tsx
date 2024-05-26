@@ -58,7 +58,7 @@ const Blurry = () => {
   useEffect(() => {
     if (hasWon) {
       updateStreak("blurry", guesses.length);
-      setFetchTrigger(!fetchTrigger);
+      setFetchTrigger((prev) => !prev);
     }
   }, [hasWon]);
 

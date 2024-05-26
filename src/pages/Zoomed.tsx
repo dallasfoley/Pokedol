@@ -26,9 +26,9 @@ const Zoom = () => {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [zoomPercent, setZoomPercent] = useState(750);
   const darkTheme = useContext(ThemeContext).darkTheme;
-  const [hasWon, setHasWon] = useState(false);
+  const [fetchTrigger, setFetchTrigger] = useState(false);
 
-  setHasWon(guesses.length > 0 && guesses[0] === answer[0]);
+  const hasWon = guesses.length > 0 && guesses[0] === answer[0];
 
   const handleGuess = async () => {
     if (!hasWon && names.includes(input.toLowerCase())) {
@@ -60,8 +60,9 @@ const Zoom = () => {
   useEffect(() => {
     if (hasWon) {
       updateStreak("zoomed", guesses.length);
+      setFetchTrigger(!fetchTrigger);
     }
-  }, [hasWon, guesses]);
+  }, [hasWon]);
 
   return (
     <>
