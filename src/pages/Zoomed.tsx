@@ -67,7 +67,11 @@ const Zoom = () => {
   return (
     <>
       <div className="flex flex-col justify-around items-center">
-        <AnalyticsBar game="zoomed" fetchTrigger={hasWon} />
+        <AnalyticsBar
+          game="zoomed"
+          fetchTrigger={hasWon}
+          guesses={guesses.length}
+        />
         {guesses.length === 0 && (
           <p className="text-lg md-text-3xl mt-4">
             Guess a Pokemon to begin! The image will become slightly more

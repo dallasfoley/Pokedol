@@ -7,9 +7,11 @@ import { resetStreak } from "../functions/resetStreak";
 const AnalyticsBar = ({
   game,
   fetchTrigger,
+  guesses = 0,
 }: {
   game: string;
   fetchTrigger: boolean;
+  guesses: number;
 }) => {
   const [user, setUser] = useState<UserDataType | null>(null);
   const [toggle, setToggle] = useState(false);
@@ -23,6 +25,45 @@ const AnalyticsBar = ({
       const yesterdayString = yesterday.toLocaleString();
       const data = await getUserData(game);
       data && setUser(data);
+      console.log(`user: ${data}`);
+      if (fetchTrigger && user) {
+        if (game === "classic" && data?.classicDate !== todayString) {
+          setUser({
+            ...user,
+            classicStreak: data?.classicStreak || 1,
+            classicTotalGuesses: (data?.classicTotalGuesses || 0) + guesses,
+            classicTotalWins: (data?.classicTotalWins || 0) + 1,
+            classicMax:
+              (data?.classicStreak || 1) > (data?.classicMax || 0)
+                ? (data?.classicStreak || 0) + 1
+                : data?.classicMax || 1,
+          });
+        }
+        if (game === "blurry" && data?.blurryDate !== todayString) {
+          setUser({
+            ...user,
+            blurryStreak: data?.blurryStreak || 1,
+            blurryTotalGuesses: (data?.blurryTotalGuesses || 0) + guesses,
+            blurryTotalWins: (data?.blurryTotalWins || 0) + 1,
+            blurryMax:
+              (data?.blurryStreak || 1) > (data?.blurryMax || 0)
+                ? (data?.blurryStreak || 0) + 1
+                : data?.blurryMax || 1,
+          });
+        }
+        if (game === "zoomed" && data?.zoomedDate !== todayString) {
+          setUser({
+            ...user,
+            zoomedStreak: data?.zoomedStreak || 1,
+            zoomedTotalGuesses: (data?.zoomedTotalGuesses || 0) + guesses,
+            zoomedTotalWins: (data?.zoomedTotalWins || 0) + 1,
+            zoomedMax:
+              (data?.zoomedStreak || 1) > (data?.zoomedMax || 0)
+                ? (data?.zoomedStreak || 0) + 1
+                : data?.zoomedMax || 1,
+          });
+        }
+      }
       if (
         game === "classic" &&
         data?.classicDate !== todayString &&

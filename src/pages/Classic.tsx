@@ -150,7 +150,11 @@ const Classic = () => {
 
   return (
     <div className="flex flex-col justify-around items-center">
-      <AnalyticsBar game="classic" fetchTrigger={fetchTrigger} />
+      <AnalyticsBar
+        game="classic"
+        fetchTrigger={fetchTrigger}
+        guesses={guesses.length}
+      />
       {guesses.length === 0 && (
         <p className="text-lg md-text-3xl mt-4 flex flex-wrap justify-center items-center">
           Guess a Pokemon to begin! You will receive hints about the Pokémon's

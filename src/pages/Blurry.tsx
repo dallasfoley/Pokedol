@@ -65,7 +65,11 @@ const Blurry = () => {
   return (
     <>
       <div className="flex flex-col items-center justify-around">
-        <AnalyticsBar game="blurry" fetchTrigger={fetchTrigger} />
+        <AnalyticsBar
+          game="blurry"
+          fetchTrigger={fetchTrigger}
+          guesses={guesses.length}
+        />
         {guesses.length === 0 && (
           <p className="text-lg md-text-3xl mt-4">
             Guess a Pokemon to begin! The image will become slightly less blurry
