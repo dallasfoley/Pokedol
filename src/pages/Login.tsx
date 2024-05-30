@@ -66,9 +66,6 @@ const Login = () => {
     navigate("/signup");
   };
 
-  console.log("API Key:", import.meta.env.VITE_API_KEY);
-  console.log("Auth Domain:", import.meta.env.VITE_AUTH_DOMAIN);
-
   return (
     <div className="min-h-screen w-full bg-slate-950 m-0 flex flex-col justify-center items-center text-white p-0">
       <div className="h-96 w-64 md:h-96 md:w-72 rounded-2xl bg-slate-800 flex flex-col justify-around items-center p-0">

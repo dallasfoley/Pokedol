@@ -125,6 +125,7 @@ const AnalyticsBar = ({
               {game === "classic" && user?.classicStreak}
               {game === "blurry" && user?.blurryStreak}
               {game === "zoomed" && user?.zoomedStreak}
+              {!user && 0}
             </h2>
           </div>
           <div className="flex flex-col justify-around">
@@ -133,6 +134,7 @@ const AnalyticsBar = ({
               {game === "classic" && user?.classicMax}
               {game === "blurry" && user?.blurryMax}
               {game === "zoomed" && user?.zoomedMax}
+              {!user && 0}
             </h2>
           </div>
           <div className="flex flex-col justify-around">
@@ -153,6 +155,7 @@ const AnalyticsBar = ({
               {game === "classic" && user?.classicTotalWins}
               {game === "blurry" && user?.blurryTotalWins}
               {game === "zoomed" && user?.zoomedTotalWins}
+              {!user && 0}
             </h2>
           </div>
         </div>
