@@ -24,7 +24,7 @@ const Login = ({
   const signIn = async () => {
     try {
       const res = await axios.post<{ user: UserType }>(
-        `http://localhost:8080/api/login`,
+        `${import.meta.env.VITE_API_URL}/api/login`,
         {
           email,
           password,

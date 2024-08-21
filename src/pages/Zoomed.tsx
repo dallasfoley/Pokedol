@@ -72,7 +72,7 @@ const Zoom = ({
         console.log("here");
         try {
           const response = await axios.put(
-            `http://localhost:8080/api/update/${user.id}`,
+            `${import.meta.env.VITE_API_URL}/api/update/${user.id}`,
             {
               game: "zoomed",
               guesses: guesses.length,

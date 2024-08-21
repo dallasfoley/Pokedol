@@ -66,12 +66,13 @@ const Blurry = ({
   }, []);
 
   useEffect(() => {
+    23;
     if (hasWon && user?.email.length > 4) {
       const updateUserStreak = async () => {
         console.log("here");
         try {
           const response = await axios.put(
-            `http://localhost:8080/api/update/${user.id}`,
+            `${import.meta.env.VITE_API_URL}/api/update/${user.id}}`,
             {
               game: "blurry",
               guesses: guesses.length,

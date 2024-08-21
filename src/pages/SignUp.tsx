@@ -27,7 +27,10 @@ const SignUp = ({
   const signUpWithEmailPassword = async () => {
     try {
       console.log(input);
-      const res = await axios.post(`http://localhost:8080/api/users`, input);
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/users`,
+        input
+      );
       const user1 = res.data.user as UserType;
       console.log(res.data.user);
       setUser(user1);

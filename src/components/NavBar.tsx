@@ -23,7 +23,7 @@ const NavBar = ({
 
   const handleSignOut = async () => {
     try {
-      await axios.post(`http://localhost:8080/api/logout`);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/logout`);
       console.log("logged out");
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
