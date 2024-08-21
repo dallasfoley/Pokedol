@@ -3,8 +3,11 @@ import { ThemeContext } from "../contexts/ThemeContext";
 import InputGuess from "../components/GuessInput";
 import WinMsg from "../components/WinMsg";
 import { names } from "../lib/constants";
-import updateStreak from "../functions/updateStreak";
+//import updateStreak from "../functions/updateStreak";
 import AnalyticsBar from "../components/AnalyticsBar";
+import { UserType } from "../lib/types";
+import axios from "axios";
+// import AnalyticsBar from "../components/AnalyticsBar";
 
 const id = Math.floor(Math.random() * 151);
 
@@ -20,7 +23,13 @@ const getAnswer = async (): Promise<string[]> => {
   }
 };
 
-const Zoom = () => {
+const Zoom = ({
+  user,
+  setUser,
+}: {
+  user: UserType;
+  setUser: (value: UserType | ((val: UserType) => UserType)) => void;
+}) => {
   const [answer, setAnswer] = useState<string[]>([]);
   const [input, setInput] = useState("");
   const [guesses, setGuesses] = useState<string[]>([]);
@@ -58,8 +67,39 @@ const Zoom = () => {
   }, []);
 
   useEffect(() => {
-    if (hasWon) {
-      updateStreak("zoomed", guesses.length);
+    if (hasWon && user?.email.length > 4) {
+      const updateUserStreak = async () => {
+        console.log("here");
+        try {
+          const response = await axios.put(
+            `http://localhost:8080/api/update/${user.id}`,
+            {
+              game: "zoomed",
+              guesses: guesses.length,
+            }
+          );
+          console.log("res.data: ", response.data);
+          const updatedUser = {
+            ...user,
+            zoomedStreak: response.data.data.streak,
+            zoomedGuesses: response.data.data.totalGuesses,
+            zoomedWins: response.data.data.totalWins,
+            zoomedMax: response.data.data.maxStreak,
+          };
+          setUser(updatedUser);
+          console.log(updatedUser);
+          if (response.status === 200) {
+            // Optionally, update local user state or notify user
+            console.log("Streak updated successfully:", response.data.message);
+          } else {
+            console.error("Failed to update streak:", response.data.error);
+          }
+        } catch (error) {
+          console.error("Error updating streak:", error);
+        }
+      };
+
+      updateUserStreak();
       setFetchTrigger(!fetchTrigger);
     }
   }, [hasWon]);
@@ -70,7 +110,8 @@ const Zoom = () => {
         <AnalyticsBar
           game="zoomed"
           fetchTrigger={hasWon}
-          guesses={guesses.length}
+          user={user}
+          setUser={setUser}
         />
         {guesses.length === 0 && (
           <p className="text-lg md-text-3xl mt-4">

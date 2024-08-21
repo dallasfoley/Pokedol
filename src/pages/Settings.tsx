@@ -2,9 +2,29 @@ import { useContext } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import axios from "axios";
+import { UserType } from "../lib/types";
 
-const Settings = () => {
+const Settings = ({
+  user,
+  setUser,
+}: {
+  user: UserType;
+  setUser: (value: UserType | ((val: UserType) => UserType)) => void;
+}) => {
   const { darkTheme, setDarkTheme } = useContext(ThemeContext);
+
+  const toggleTheme = async () => {
+    try {
+      await axios.put(`http://localhost:8080/api/theme/${user.id}`, {
+        newTheme: !darkTheme,
+      });
+      setUser({ ...user, darkTheme: !darkTheme });
+      setDarkTheme(!darkTheme);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <div className={`min-h-screen p-5`}>
@@ -25,7 +45,7 @@ const Settings = () => {
         <div className="flex w-full  justify-between items-center p-3">
           <h1 className="text-md md:text-2xl">Toggle Dark/Light Theme</h1>
           <button
-            onClick={() => setDarkTheme(!darkTheme)}
+            onClick={toggleTheme}
             className={`w-14 h-14 rounded-2xl ${
               darkTheme
                 ? "bg-slate-900 text-slate-200 hover:bg-slate-700"

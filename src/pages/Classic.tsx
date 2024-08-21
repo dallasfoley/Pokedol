@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { PokemonApi } from "../lib/types";
+import { PokemonApi, UserType } from "../lib/types";
 import Row from "../components/Row";
 import WinMsg from "../components/WinMsg";
 import GuessInput from "../components/GuessInput";
-import updateStreak from "../functions/updateStreak";
+//import updateStreak from "../functions/updateStreak";
 import AnalyticsBar from "../components/AnalyticsBar";
+import axios from "axios";
+// import AnalyticsBar from "../components/AnalyticsBar";
 
 const isDev = import.meta.env.MODE === "development";
 const API_BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
@@ -21,13 +23,21 @@ const ColumnHead = {
   weight: "Weight",
 };
 
-const Classic = () => {
+const Classic = ({
+  user,
+  setUser,
+}: {
+  user: UserType;
+  setUser: (value: UserType | ((val: UserType) => UserType)) => void;
+}) => {
   const [input, setInput] = useState("");
   const [guesses, setGuesses] = useState<PokemonApi[]>([]);
   const [answer, setAnswer] = useState<PokemonApi | null>(null);
   const [fetchTrigger, setFetchTrigger] = useState(false);
 
   const hasWon = guesses.length > 0 && guesses[0].name === answer?.name;
+
+  console.log("classic user: ", user);
 
   const getPokemonData = async (
     url: string,
@@ -134,8 +144,38 @@ const Classic = () => {
   };
 
   useEffect(() => {
-    if (hasWon) {
-      updateStreak("classic", guesses.length);
+    if (hasWon && user?.email.length > 4) {
+      const updateUserStreak = async () => {
+        console.log("here");
+        try {
+          const response = await axios.put(
+            `http://localhost:8080/api/update/${user.id}`,
+            {
+              game: "classic",
+              guesses: guesses.length,
+            }
+          );
+          console.log("res.data: ", response.data);
+          const updatedUser = {
+            ...user,
+            classicStreak: response.data.data.streak,
+            classicGuesses: response.data.data.totalGuesses,
+            classicWins: response.data.data.totalWins,
+            classicMax: response.data.data.maxStreak,
+          };
+          setUser(updatedUser);
+          console.log(updatedUser);
+          if (response.status === 200) {
+            console.log("Streak updated successfully:", response.data.message);
+          } else {
+            console.error("Failed to update streak:", response.data.error);
+          }
+        } catch (error) {
+          console.error("Error updating streak:", error);
+        }
+      };
+
+      updateUserStreak();
       setFetchTrigger(!fetchTrigger);
     }
   }, [hasWon]);
@@ -153,7 +193,8 @@ const Classic = () => {
       <AnalyticsBar
         game="classic"
         fetchTrigger={fetchTrigger}
-        guesses={guesses.length}
+        user={user}
+        setUser={setUser}
       />
       {guesses.length === 0 && (
         <p className="text-lg md-text-3xl mt-4 flex flex-wrap justify-center items-center">

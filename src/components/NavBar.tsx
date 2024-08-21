@@ -1,4 +1,3 @@
-import { logout } from "../lib/constants";
 import CatchingPokemonIcon from "@mui/icons-material/CatchingPokemon";
 import { useContext } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
@@ -6,16 +5,52 @@ import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+//import { UserContext } from "../contexts/UserContext";
+import { UserType } from "../lib/types";
 
 const links = ["Home", "Settings"];
 const icons = [<HomeIcon />, <SettingsIcon />];
 
-const NavBar = () => {
+const NavBar = ({
+  setUser,
+}: {
+  setUser: (value: UserType | ((val: UserType) => UserType)) => void;
+}) => {
+  //const { setUser } = useContext(UserContext);
   const darkTheme = useContext(ThemeContext).darkTheme;
   const navigate = useNavigate();
 
-  const handleSignOut = () => {
-    logout();
+  const handleSignOut = async () => {
+    try {
+      await axios.post(`http://localhost:8080/api/logout`);
+      console.log("logged out");
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayLocale = yesterday.toLocaleDateString();
+      setUser({
+        email: "meow",
+        password: "",
+        darkTheme: true,
+        blurryStreak: 0,
+        classicStreak: 0,
+        zoomedStreak: 0,
+        blurryMax: 0,
+        classicMax: 0,
+        zoomedMax: 0,
+        blurryDate: yesterdayLocale,
+        classicDate: yesterdayLocale,
+        zoomedDate: yesterdayLocale,
+        classicGuesses: 0,
+        classicWins: 0,
+        blurryGuesses: 0,
+        blurryWins: 0,
+        zoomedGuesses: 0,
+        zoomedWins: 0,
+      });
+    } catch (e) {
+      console.error(e);
+    }
     navigate("/");
   };
 

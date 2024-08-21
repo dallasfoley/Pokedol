@@ -11,7 +11,11 @@ export type PokemonApi = {
   picUrl: string;
 };
 
-export type UserDataType = {
+export type UserType = {
+  id?: number;
+  email: string;
+  password: string;
+  darkTheme: boolean;
   blurryStreak: number;
   classicStreak: number;
   zoomedStreak: number;
@@ -21,11 +25,10 @@ export type UserDataType = {
   blurryDate: string;
   classicDate: string;
   zoomedDate: string;
-  userID: string;
-  classicTotalGuesses: number;
-  classicTotalWins: number;
-  blurryTotalGuesses: number;
-  blurryTotalWins: number;
-  zoomedTotalGuesses: number;
-  zoomedTotalWins: number;
+  classicGuesses: number;
+  classicWins: number;
+  blurryGuesses: number;
+  blurryWins: number;
+  zoomedGuesses: number;
+  zoomedWins: number;
 };
