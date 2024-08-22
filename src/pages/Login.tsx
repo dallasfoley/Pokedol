@@ -11,6 +11,8 @@ const formatDate = (isoString: string) => {
   return format(new Date(isoString), "MM/dd/yyyy");
 };
 
+console.log(import.meta.env.VITE_API_URL);
+
 const Login = ({
   setUser,
 }: {
