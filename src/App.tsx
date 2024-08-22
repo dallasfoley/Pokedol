@@ -1,34 +1,42 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
-import { auth } from "./config/firebase.config";
 import NavBar from "./components/NavBar";
-import { useState, useEffect } from "react";
-import { User } from "firebase/auth";
+import { useState } from "react";
 import Settings from "./pages/Settings";
 import { ThemeContext } from "./contexts/ThemeContext";
 import Classic from "./pages/Classic";
 import Blurry from "./pages/Blurry";
 import Zoomed from "./pages/Zoomed";
 import SignUp from "./pages/SignUp";
+//import { UserContext } from "./contexts/UserContext";
+import { yesterdayLocale } from "./lib/constants";
+import { UserType } from "./lib/types";
 
 function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [darkTheme, setDarkTheme] = useState(() => {
-    const savedTheme = localStorage.getItem("darkTheme");
-    return savedTheme === "true" ? true : false;
+  // const { user, setUser } = useContext(UserContext);
+  const [darkTheme, setDarkTheme] = useState(true);
+  const [user, setUser] = useState<UserType>({
+    id: 0,
+    email: "",
+    password: "",
+    darkTheme: true,
+    blurryStreak: 0,
+    classicStreak: 0,
+    zoomedStreak: 0,
+    blurryMax: 0,
+    classicMax: 0,
+    zoomedMax: 0,
+    blurryDate: yesterdayLocale,
+    classicDate: yesterdayLocale,
+    zoomedDate: yesterdayLocale,
+    classicGuesses: 0,
+    classicWins: 0,
+    blurryGuesses: 0,
+    blurryWins: 0,
+    zoomedGuesses: 0,
+    zoomedWins: 0,
   });
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("darkTheme", darkTheme.toString());
-  }, [darkTheme]);
 
   return (
     <ThemeContext.Provider value={{ darkTheme, setDarkTheme }}>
@@ -40,15 +48,27 @@ function App() {
         } w-full min-h-screen`}
       >
         <Router>
-          {user && <NavBar />}
+          {user?.email.length > 4 && <NavBar setUser={setUser} />}
           <Routes>
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<Login setUser={setUser} />} />
             <Route path="/home" element={<Home />} />
-            <Route path="/classic" element={<Classic />} />
-            <Route path="/blurry" element={<Blurry />} />
-            <Route path="/zoomed" element={<Zoomed />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/signup" element={<SignUp />} />
+            <Route
+              path="/classic"
+              element={<Classic user={user} setUser={setUser} />}
+            />
+            <Route
+              path="/blurry"
+              element={<Blurry user={user} setUser={setUser} />}
+            />
+            <Route
+              path="/zoomed"
+              element={<Zoomed user={user} setUser={setUser} />}
+            />
+            <Route
+              path="/settings"
+              element={<Settings user={user} setUser={setUser} />}
+            />
+            <Route path="/signup" element={<SignUp setUser={setUser} />} />
           </Routes>
         </Router>
       </div>

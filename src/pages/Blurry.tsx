@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useContext } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
-import updateStreak from "../functions/updateStreak";
+//import updateStreak from "../functions/updateStreak";
 import GuessInput from "../components/GuessInput";
 import WinMsg from "../components/WinMsg";
 import { names } from "../lib/constants";
+import axios from "axios";
+import { UserType } from "../lib/types";
 import AnalyticsBar from "../components/AnalyticsBar";
 
 const id = Math.floor(Math.random() * 151);
@@ -21,7 +23,13 @@ const getAnswer = async (): Promise<string[]> => {
   }
 };
 
-const Blurry = () => {
+const Blurry = ({
+  user,
+  setUser,
+}: {
+  user: UserType;
+  setUser: (value: UserType | ((val: UserType) => UserType)) => void;
+}) => {
   const [answer, setAnswer] = useState<string[]>([]);
   const [input, setInput] = useState("");
   const [guesses, setGuesses] = useState<string[]>([]);
@@ -29,6 +37,8 @@ const Blurry = () => {
   const [fetchTrigger, setFetchTrigger] = useState(false);
 
   const hasWon = guesses.length > 0 && guesses[0] === answer[0];
+
+  console.log(user);
 
   const handleGuess = () => {
     if (names.includes(input.toLowerCase())) {
@@ -56,9 +66,41 @@ const Blurry = () => {
   }, []);
 
   useEffect(() => {
-    if (hasWon) {
-      updateStreak("blurry", guesses.length);
-      setFetchTrigger((prev) => !prev);
+    23;
+    if (hasWon && user?.email.length > 4) {
+      const updateUserStreak = async () => {
+        console.log("here");
+        try {
+          const response = await axios.put(
+            `${import.meta.env.VITE_API_URL}/api/update/${user.id}}`,
+            {
+              game: "blurry",
+              guesses: guesses.length,
+            }
+          );
+          console.log("res.data: ", response.data);
+          const updatedUser = {
+            ...user,
+            blurryStreak: response.data.data.streak,
+            blurryGuesses: response.data.data.totalGuesses,
+            blurryWins: response.data.data.totalWins,
+            blurryMax: response.data.data.maxStreak,
+          };
+          setUser(updatedUser);
+          console.log(updatedUser);
+          if (response.status === 200) {
+            // Optionally, update local user state or notify user
+            console.log("Streak updated successfully:", response.data.message);
+          } else {
+            console.error("Failed to update streak:", response.data.error);
+          }
+        } catch (error) {
+          console.error("Error updating streak:", error);
+        }
+      };
+
+      updateUserStreak();
+      setFetchTrigger(!fetchTrigger);
     }
   }, [hasWon]);
 
@@ -68,7 +110,8 @@ const Blurry = () => {
         <AnalyticsBar
           game="blurry"
           fetchTrigger={fetchTrigger}
-          guesses={guesses.length}
+          user={user}
+          setUser={setUser}
         />
         {guesses.length === 0 && (
           <p className="text-lg md-text-3xl mt-4">

@@ -1,118 +1,118 @@
-import BarChartIcon from "@mui/icons-material/BarChart";
 import { useEffect, useState } from "react";
-import getUserData from "../functions/getUserData";
-import { UserDataType } from "../lib/types";
-import { resetStreak } from "../functions/resetStreak";
+import { UserType } from "../lib/types";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import axios from "axios";
+import { formatDate } from "../lib/utils";
+
+const options: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "2-digit", // Ensures two-digit months
+  day: "2-digit", // Ensures two-digit days
+};
+
+const today = new Date();
+const yesterday = new Date();
+yesterday.setDate(yesterday.getDate() - 1);
+const todayString = today.toLocaleDateString(undefined, options);
+const yesterdayString = yesterday.toLocaleDateString(undefined, options);
 
 const AnalyticsBar = ({
   game,
   fetchTrigger,
-  guesses = 0,
+  user,
+  setUser,
 }: {
   game: string;
   fetchTrigger: boolean;
-  guesses: number;
+  user: UserType;
+  setUser: (value: UserType | ((val: UserType) => UserType)) => void;
 }) => {
-  const [user, setUser] = useState<UserDataType | null>(null);
   const [toggle, setToggle] = useState(false);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const today = new Date();
-      const todayString = today.toLocaleDateString();
-      const yesterday = new Date(today);
-      yesterday.setDate(today.getDate() - 1);
-      const yesterdayString = yesterday.toLocaleString();
-      const data = await getUserData(game);
-      data && setUser(data);
-      console.log(`user: ${data}`);
-      if (fetchTrigger && user) {
-        if (game === "classic" && data?.classicDate !== todayString) {
-          setUser({
-            ...user,
-            classicStreak: data?.classicStreak || 1,
-            classicTotalGuesses: (data?.classicTotalGuesses || 0) + guesses,
-            classicTotalWins: (data?.classicTotalWins || 0) + 1,
-            classicMax:
-              (data?.classicStreak || 1) > (data?.classicMax || 0)
-                ? (data?.classicStreak || 0) + 1
-                : data?.classicMax || 1,
-          });
-        }
-        if (game === "blurry" && data?.blurryDate !== todayString) {
-          setUser({
-            ...user,
-            blurryStreak: data?.blurryStreak || 1,
-            blurryTotalGuesses: (data?.blurryTotalGuesses || 0) + guesses,
-            blurryTotalWins: (data?.blurryTotalWins || 0) + 1,
-            blurryMax:
-              (data?.blurryStreak || 1) > (data?.blurryMax || 0)
-                ? (data?.blurryStreak || 0) + 1
-                : data?.blurryMax || 1,
-          });
-        }
-        if (game === "zoomed" && data?.zoomedDate !== todayString) {
-          setUser({
-            ...user,
-            zoomedStreak: data?.zoomedStreak || 1,
-            zoomedTotalGuesses: (data?.zoomedTotalGuesses || 0) + guesses,
-            zoomedTotalWins: (data?.zoomedTotalWins || 0) + 1,
-            zoomedMax:
-              (data?.zoomedStreak || 1) > (data?.zoomedMax || 0)
-                ? (data?.zoomedStreak || 0) + 1
-                : data?.zoomedMax || 1,
-          });
-        }
-      }
-      if (
-        game === "classic" &&
-        data?.classicDate !== todayString &&
-        data?.classicDate !== yesterdayString &&
-        data?.classicDate !== "null"
-      ) {
-        resetStreak(game);
-        console.log(todayString);
-        console.log(yesterdayString);
-        console.log(data?.classicDate);
-      }
+    const resetStreak = async () => {
+      console.log("today :", todayString);
+      console.log("yesterday :", yesterdayString);
+      console.log("user date :", user.blurryDate);
 
       if (
+        game === "classic" &&
+        user.classicDate !== todayString &&
+        user.classicDate !== yesterdayString
+      ) {
+        await axios.put(`http://localhost:8080/api/reset/${user.id}`, {
+          streak: "classicStreak",
+        });
+        setUser({ ...user, classicStreak: 0 });
+      } else if (
         game === "blurry" &&
-        data?.blurryDate !== todayString &&
-        data?.blurryDate !== yesterdayString &&
-        data?.blurryDate !== "null"
+        user.blurryDate !== todayString &&
+        user.blurryDate !== yesterdayString
       ) {
-        resetStreak(game);
-        console.log(todayString);
-        console.log(yesterdayString);
-        console.log(data?.blurryDate);
-      }
-      if (
+        await axios.put(`http://localhost:8080/api/reset/${user.id}`, {
+          streak: "blurryStreak",
+        });
+        setUser({ ...user, blurryStreak: 0 });
+      } else if (
         game === "zoomed" &&
-        data?.zoomedDate !== todayString &&
-        data?.zoomedDate !== yesterdayString &&
-        data?.zoomedDate !== "null"
+        user.zoomedDate !== todayString &&
+        user.zoomedDate !== yesterdayString
       ) {
-        resetStreak(game);
-        console.log(todayString);
-        console.log(yesterdayString);
-        console.log(data?.zoomedDate);
+        await axios.put(`http://localhost:8080/api/reset/${user.id}`, {
+          streak: "zoomedStreak",
+        });
+        setUser({ ...user, zoomedStreak: 0 });
       }
     };
-    fetchUserData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    resetStreak();
+  }, []);
+
+  useEffect(() => {
+    const updateBar = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/users/${user.id}`
+        );
+        const updatedUser = res.data[0];
+        console.log("updated user :", updatedUser);
+        game === "classic" &&
+          setUser({
+            ...updatedUser,
+            classicDate: todayString,
+            blurryDate: formatDate(updatedUser.blurryDate),
+            zoomedDate: formatDate(updatedUser.zoomedDate),
+          });
+        game === "zoomed" &&
+          setUser({
+            ...updatedUser,
+            zoomedDate: todayString,
+            blurryDate: formatDate(updatedUser.blurryDate),
+            classicDate: formatDate(updatedUser.classicDate),
+          });
+        game === "blurry" &&
+          setUser({
+            ...updatedUser,
+            blurryDate: todayString,
+            classicDate: formatDate(updatedUser.classicDate),
+            zoomedDate: formatDate(updatedUser.zoomedDate),
+          });
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    updateBar();
   }, [fetchTrigger]);
 
   return (
     <div
       className={`flex flex-col justify-around items-center
-      }`}
+        }`}
     >
       <button
         onClick={() => setToggle(!toggle)}
         className="flex justify-around items-center rounded-2xl bg-slate-700 text-slate-300 
-        w-48 h-12 m-5 p-2 transition duration-300 hover:scale-105 
-        hover:bg-slate-300 hover:text-slate-700"
+          w-48 h-12 m-5 p-2 transition duration-300 hover:scale-105 
+          hover:bg-slate-300 hover:text-slate-700"
       >
         <BarChartIcon className="text-md" />
         Toggle Analytics Bar
@@ -141,21 +141,19 @@ const AnalyticsBar = ({
             <h3 className="mx-3">Average Guesses</h3>
             <h2 className="text-center">
               {game === "classic" &&
-                (user?.classicTotalGuesses || 0) /
-                  (user?.classicTotalWins || 1)}
+                (user?.classicGuesses || 0) / (user?.classicWins || 1)}
               {game === "blurry" &&
-                (user?.blurryTotalGuesses || 0) / (user?.blurryTotalWins || 1)}
+                (user?.blurryGuesses || 0) / (user?.blurryWins || 1)}
               {game === "zoomed" &&
-                (user?.zoomedTotalGuesses || 0) / (user?.zoomedTotalWins || 1)}
+                (user?.zoomedGuesses || 0) / (user?.zoomedWins || 1)}
             </h2>
           </div>
           <div className="flex flex-col justify-around">
             <h3 className="mx-3">Total Wins</h3>
             <h2 className="text-center">
-              {game === "classic" && user?.classicTotalWins}
-              {game === "blurry" && user?.blurryTotalWins}
-              {game === "zoomed" && user?.zoomedTotalWins}
-              {!user && 0}
+              {game === "classic" && user?.classicWins}
+              {game === "blurry" && user?.blurryWins}
+              {game === "zoomed" && user?.zoomedWins}
             </h2>
           </div>
         </div>

@@ -1,49 +1,43 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { signUpWithEmailPassword } from "../lib/constants";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useState } from "react";
-import { auth, db } from "../config/firebase.config";
 import { useNavigate } from "react-router-dom";
-import { getDoc, setDoc, doc } from "firebase/firestore";
+import axios from "axios";
+import { UserType } from "../lib/types";
 
-const SignUp = () => {
-  const [emailInput, setEmailInput] = useState("");
-  const [passwordInput, setPasswordInput] = useState("");
+const SignUp = ({
+  setUser,
+}: {
+  setUser: (value: UserType | ((val: UserType) => UserType)) => void;
+}) => {
+  const [input, setInput] = useState({
+    email: "",
+    password: "",
+  });
   const navigate = useNavigate();
 
-  const handleSignUpWithEmailPassword = async () => {
-    try {
-      await signUpWithEmailPassword(emailInput, passwordInput);
-      auth.onAuthStateChanged(async function (user) {
-        if (user) {
-          const docRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(docRef);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setInput((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-          !docSnap.exists() &&
-            (await setDoc(docRef, {
-              blurryStreak: 0,
-              classicStreak: 0,
-              zoomedStreak: 0,
-              blurryMax: 0,
-              classicMax: 0,
-              zoomedMax: 0,
-              blurryDate: "null",
-              classicDate: "null",
-              zoomedDate: "null",
-              userID: user.uid,
-              classicTotalGuesses: 0,
-              classicTotalWins: 0,
-              blurryTotalGuesses: 0,
-              blurryTotalWins: 0,
-              zoomedTotalGuesses: 0,
-              zoomedTotalWins: 0,
-            }));
-          navigate("/home");
-        } else {
-          console.log("There is no logged in user");
-        }
-      });
+  const signUpWithEmailPassword = async () => {
+    try {
+      console.log(input);
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/users`,
+        input
+      );
+      const user1 = res.data.user as UserType;
+      console.log(res.data.user);
+      setUser(user1);
+      navigate("/home");
     } catch (e) {
       console.error(e);
+      alert(e);
     }
   };
 
@@ -54,26 +48,35 @@ const SignUp = () => {
         <input
           type="text"
           placeholder="Email..."
-          onChange={(e) => setEmailInput(e.target.value)}
+          onChange={(e) => handleChange(e)}
           required
+          name="email"
           className="h-10 w-48 rounded-xl p-2 text-slate-950"
         />
         <input
           type="password"
           placeholder="Password..."
-          onChange={(e) => setPasswordInput(e.target.value)}
+          onChange={(e) => handleChange(e)}
           required
+          name="password"
           className="h-10 w-48 rounded-xl p-2 text-slate-950"
         />
 
         <button
-          onClick={handleSignUpWithEmailPassword}
+          onClick={signUpWithEmailPassword}
           className="h-14 w-14 bg-slate-500 rounded-2xl hover:bg-slate-200
         transition duration-300 hover:scale-105 hover:text-black"
         >
           <ArrowForwardIcon fontSize="large" />
         </button>
       </div>
+      <button
+        onClick={() => navigate("/")}
+        className="h-14 w-14 m-8 bg-slate-500 rounded-2xl hover:bg-slate-200
+        transition duration-300 hover:scale-105 hover:text-black"
+      >
+        <ArrowBackIcon fontSize="large" />
+      </button>
     </div>
   );
 };

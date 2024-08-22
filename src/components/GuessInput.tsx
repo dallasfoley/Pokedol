@@ -48,7 +48,7 @@ const GuessInput = ({
         />
         <button
           className={`rounded-2xl h-14 w-14 ml-3 transition duration-300 hover:scale-110`}
-          onClick={() => handleGuess()}
+          onClick={handleGuess}
           style={{
             color: darkTheme ? "#2f3133" : "#ebfffc",
             background: darkTheme ? "#ebfffc" : "#2f3133",
