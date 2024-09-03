@@ -72,7 +72,7 @@ const Blurry = ({
         console.log("here");
         try {
           const response = await axios.put(
-            `${import.meta.env.VITE_API_URL}/api/update/${user.id}}`,
+            `${import.meta.env.VITE_API_URL}api/update/${user.id}}`,
             {
               game: "blurry",
               guesses: guesses.length,

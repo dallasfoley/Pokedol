@@ -5,7 +5,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+//import axios from "axios";
 //import { UserContext } from "../contexts/UserContext";
 import { UserType } from "../lib/types";
 
@@ -23,7 +23,7 @@ const NavBar = ({
 
   const handleSignOut = async () => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/logout`);
+      //await axios.post(`${import.meta.env.VITE_API_URL}/api/logout`);
       console.log("logged out");
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);

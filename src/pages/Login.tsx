@@ -11,7 +11,7 @@ const formatDate = (isoString: string) => {
   return format(new Date(isoString), "MM/dd/yyyy");
 };
 
-console.log(import.meta.env.VITE_API_URL);
+console.log("api url: ", import.meta.env.VITE_API_URL);
 
 const Login = ({
   setUser,
@@ -43,6 +43,30 @@ const Login = ({
       navigate("/home");
     } catch (e) {
       console.error(e);
+      const today = new Date();
+      const todayString = today.toLocaleDateString();
+      setUser({
+        id: 0,
+        email: email,
+        password: password,
+        darkTheme: true,
+        blurryStreak: 0,
+        classicStreak: 0,
+        zoomedStreak: 0,
+        blurryMax: 0,
+        classicMax: 0,
+        zoomedMax: 0,
+        blurryDate: todayString,
+        classicDate: todayString,
+        zoomedDate: todayString,
+        classicGuesses: 0,
+        classicWins: 0,
+        blurryGuesses: 0,
+        blurryWins: 0,
+        zoomedGuesses: 0,
+        zoomedWins: 0,
+      });
+      navigate("/home");
     }
   };
 

@@ -16,9 +16,12 @@ const Settings = ({
 
   const toggleTheme = async () => {
     try {
-      await axios.put(`http://localhost:8080/api/theme/${user.id}`, {
-        newTheme: !darkTheme,
-      });
+      await axios.put(
+        `http://${import.meta.env.VITE_API_URL}api/theme/${user.id}`,
+        {
+          newTheme: !darkTheme,
+        }
+      );
       setUser({ ...user, darkTheme: !darkTheme });
       setDarkTheme(!darkTheme);
     } catch (e) {
