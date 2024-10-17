@@ -71,7 +71,7 @@ const AnalyticsBar = ({
     const updateBar = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/users/${user.id}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/users/${user.id}`
         );
         const updatedUser = res.data[0];
         console.log("updated user :", updatedUser);

@@ -11,7 +11,7 @@ const formatDate = (isoString: string) => {
   return format(new Date(isoString), "MM/dd/yyyy");
 };
 
-console.log("api url: ", import.meta.env.VITE_API_URL);
+console.log("api url: ", import.meta.env.VITE_BACKEND_URL);
 
 const Login = ({
   setUser,
@@ -26,7 +26,7 @@ const Login = ({
   const signIn = async () => {
     try {
       const res = await axios.post<{ user: UserType }>(
-        `${import.meta.env.VITE_API_URL}api/login`,
+        `${import.meta.env.VITE_BACKEND_URL}api/login`,
         {
           email,
           password,
