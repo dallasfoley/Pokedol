@@ -72,7 +72,7 @@ const Zoom = ({
         console.log("here");
         try {
           const response = await axios.put(
-            `${import.meta.env.VITE_BACKEND_URL}/api/update/${user.id}`,
+            `${import.meta.env.VITE_BACKEND_URL_2}/api/update/${user.id}`,
             {
               game: "zoomed",
               guesses: guesses.length,

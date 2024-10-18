@@ -28,7 +28,7 @@ const SignUp = ({
     try {
       console.log(input);
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/users`,
+        `${import.meta.env.VITE_BACKEND_URL_2}/api/users`,
         input
       );
       const user1 = res.data.user as UserType;
