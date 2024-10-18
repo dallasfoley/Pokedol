@@ -149,7 +149,7 @@ const Classic = ({
         console.log("here");
         try {
           const response = await axios.put(
-            `${import.meta.env.VITE_BACKEND_URL}api/update/${user.id}`,
+            `${import.meta.env.VITE_BACKEND_URL}/api/update/${user.id}`,
             {
               game: "classic",
               guesses: guesses.length,

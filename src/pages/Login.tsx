@@ -26,7 +26,7 @@ const Login = ({
   const signIn = async () => {
     try {
       const res = await axios.post<{ user: UserType }>(
-        `${import.meta.env.VITE_BACKEND_URL}api/login`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/login`,
         {
           email,
           password,
